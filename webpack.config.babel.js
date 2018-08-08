@@ -6,23 +6,27 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 const repoRoot = __dirname
 const appRoot = path.join(repoRoot, 'src')
 const distRoot = path.join(repoRoot, 'dist')
+const publicRoot = path.join(repoRoot, 'public')
 
 export default () => {
     let plugins = [
         new CleanWebpackPlugin([distRoot]),
         new HtmlWebpackPlugin({
-            template: 'public/index.html',
+            title: 'RemaEditor',
+            template: path.join(publicRoot, 'index.html'),
         }),
     ]
 
     return {
+        mode: 'development',
+
         entry: {
             bundle: ['babel-polyfill', path.join(appRoot, 'index.js')],
         },
 
         output: {
             path: distRoot,
-            filename: 'bundle.js',
+            filename: '[name]-[hash].js',
         },
 
         resolve: {
@@ -48,20 +52,21 @@ export default () => {
                 },
                 {
                     test: /\.css$/,
-                    use: ['style-loader', 'css-loader'],
+                    use: [{
+                        loader: 'style-loader',
+                    }, {
+                        loader: 'css-loader',
+                    }],
                 },
             ],
         },
 
-        devServer: {
-            contentBase: [
-                distRoot,
-            ],
-            host: '0.0.0.0',
-            port: '9010',
-            noInfo: true,
-            disableHostCheck: true,
-            historyApiFallback: true,
+        devtool:  "cheap-eval-source-map",
+
+        serve: {
+            content: [distRoot],
+            add: app => {
+            },
         },
         plugins,
     }
