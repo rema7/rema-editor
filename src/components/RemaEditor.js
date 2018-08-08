@@ -3,37 +3,40 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import ItemBlock from './ItemBlock/ItemBlock'
 
-const initialValue = Value.fromJSON({
+const initialValue = {
     document: {
         nodes: [
             {
-                object: 'block',
-                type: 'paragraph',
+                object:'block',
+                type:'item',
+                isVoid:false,
+                data: {
+                    id: 'XXX-??',
+                },
                 nodes: [
+
                 ],
             },
         ],
     },
-})
+}
+
+const existingValue = JSON.parse(localStorage.getItem('content'))
+const currentValue = Value.fromJSON(existingValue || initialValue)
 
 class RemaEditor extends React.Component {
     constructor (props) {
         super(props)
 
-        let items = []
-        for (let i=0; i<10; i++) {
-            items.push({
-                id: 'xxx-' + i,
-            })
-        }
-
         this.state = {
-            value: initialValue,
-            items,
+            value: currentValue,
         }
     }
 
-    onKeyDown(event, change) {
+    componentDidMount () {
+    }
+
+    onKeyDown (event, change) {
 
         // const { value } = change
 
@@ -43,14 +46,19 @@ class RemaEditor extends React.Component {
             change.splitBlock().setBlocks({
                 type: 'item',
                 data: {
-                    item: this.state.items[0],
+                    id: 'XXX-??',
                 },
-            })
+            }).focus()
+
             return true
         }
     }
 
-    onChange({value}) {
+    onChange ({value}) {
+        if (value.document !== this.state.value.document) {
+            const content = JSON.stringify(value.toJSON())
+            localStorage.setItem('content', content)
+        }
         this.setState({value})
     }
 
@@ -59,7 +67,6 @@ class RemaEditor extends React.Component {
             <div>
                 <h1> RemaEditor </h1>
                 <Editor
-                    placeholder="Get to work..."
                     value={this.state.value}
                     onChange={::this.onChange}
                     onKeyDown={::this.onKeyDown}
@@ -69,10 +76,10 @@ class RemaEditor extends React.Component {
         )
     }
 
-    renderNode(props) {
-        const { attributes, node, isFocused } = props
+    renderNode (props) {
+        const {attributes} = props
 
-        switch(props.node.type) {
+        switch (props.node.type) {
             case 'code': {
                 return (
                     <h1 {...props.attributes}>
@@ -81,10 +88,8 @@ class RemaEditor extends React.Component {
                 )
             }
             case 'item': {
-                const item = node.data.get('item')
-
                 return (
-                    <ItemBlock {...props} item={item} {...attributes}/>
+                    <ItemBlock {...props} {...attributes}/>
                 )
             }
         }

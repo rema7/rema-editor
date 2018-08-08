@@ -2,9 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.string,
-    }).isRequired,
+    node: PropTypes.object.isRequired,
+    children: PropTypes.node,
 }
 
 class ItemBlock extends React.Component {
@@ -16,7 +15,9 @@ class ItemBlock extends React.Component {
     }
 
     render () {
-        const { id } = this.props.item
+        const { node } = this.props
+        const id = node.data.get('id')
+
 
         return (
             <div className={'item-wrapper'}>
