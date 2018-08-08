@@ -10,7 +10,7 @@ const publicRoot = path.join(repoRoot, 'public')
 
 export default () => {
     let plugins = [
-        new CleanWebpackPlugin([distRoot]),
+        // new CleanWebpackPlugin([distRoot]),
         new HtmlWebpackPlugin({
             title: 'RemaEditor',
             template: path.join(publicRoot, 'index.html'),
@@ -61,7 +61,7 @@ export default () => {
             ],
         },
 
-        devtool:  "cheap-eval-source-map",
+        devtool:  "source-map",
 
         serve: {
             content: [distRoot],
